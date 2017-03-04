@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS persistent_logins;
 DROP TABLE IF EXISTS answer;
 DROP TABLE IF EXISTS stage;
 DROP TABLE IF EXISTS business;

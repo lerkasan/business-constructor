@@ -25,6 +25,24 @@ export class UserService {
       );
   }
 
+  public getCurrentUser() {
+    let path = '/api/users/current';
+    let headers = new Headers({'Content-Type': 'application/json'});
+    let options = new RequestOptions({headers: headers});
+
+    return this.http.get(path, options)
+      .map(
+        (response) => {
+          return response;
+        }
+      )
+      .catch(
+        (response) => {
+          return response;
+        }
+      );
+  }
+
   public updateUser(user: User) {
     let path = '/api/users/' + user.id;
     let headers = new Headers({'Content-Type': 'application/json'});

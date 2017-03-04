@@ -18,15 +18,16 @@ export class HeaderComponent implements OnInit {
   adminBoard: boolean = true;
 
   constructor(private authService: AuthService, private router: Router) {
-    // Do stuff
   }
 
   ngOnInit() {
+    this.authService.autoLogin();
     if (sessionStorage.getItem('currentUser')) {
       this.loggedin = false;
       this.user = JSON.parse(sessionStorage.getItem('currentUser'));
       this.model = this.user;
       this.adminBoard = this.showAdminPanel();
+
     }
   }
 

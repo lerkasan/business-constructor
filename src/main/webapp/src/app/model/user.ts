@@ -14,6 +14,7 @@ export class User {
   firstname: string;
   midlename: string;
   lastname: string;
+  rememberme: boolean;
 
   constructor() {
   }

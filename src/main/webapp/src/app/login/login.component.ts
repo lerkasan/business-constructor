@@ -23,7 +23,7 @@ export class LoginComponent {
 
   authRequest() {
 
-    this.authService.authRequest(this.model.username, this.model.password)
+    this.authService.authRequest(this.model.username, this.model.password, this.model.rememberme)
       .subscribe((result) => {
           if (result === 200) {
             this.router.navigate(['/']);
