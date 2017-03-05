@@ -38,6 +38,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
+                .antMatchers(HttpMethod.POST, "/api/users/register").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/users").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/users/available**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/questions/**", "/api/options/**", "/api/permits/**")
@@ -53,7 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/**").hasAnyRole("ADMIN", "EXPERT")
                 .antMatchers("/user/**").hasRole("USER")
                 .antMatchers("/expert/**").hasRole("EXPERT")
-                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/admin/**").hasAnyRole("ADMIN", "EXPERT")
                 .and()
                 .csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(new Http403ForbiddenEntryPoint())
@@ -62,7 +63,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .failureHandler(new SimpleUrlAuthenticationFailureHandler())
                 .and()
                 .rememberMe().rememberMeParameter("rememberme")
-                .tokenRepository(persistentTokenRepository()).tokenValiditySeconds(86400)
+                .tokenRepository(persistentTokenRepository()).tokenValiditySeconds(864000)
                 .and()
                 .logout().logoutUrl("/api/logout")
                 .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK));

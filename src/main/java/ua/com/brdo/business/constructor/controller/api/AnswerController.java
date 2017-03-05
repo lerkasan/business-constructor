@@ -135,7 +135,7 @@ public class AnswerController {
     @GetMapping(path = "/{businessId}/send")
     public void sendFlowToEmail(@ApiIgnore @ModelAttribute Business business) {
         List<Stage> flow = stageService.findByBusiness(business);
-        User user =business.getUser();
+        User user = business.getUser();
         String userEmail = user.getEmail();
         String message = htmlRender.renderFlow(flow, business);
         mailer.send(userEmail, "Етапи відкриття бізнесу", message);

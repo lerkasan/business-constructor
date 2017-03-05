@@ -87,6 +87,8 @@ public class User implements UserDetails {
     @JsonProperty("roles")
     private Set<Role> authorities;
 
+    private boolean enabled = false;
+
     public User() {
         authorities = new HashSet<>();
     }
@@ -121,6 +123,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 }

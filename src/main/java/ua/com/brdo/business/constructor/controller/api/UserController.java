@@ -18,20 +18,28 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import ua.com.brdo.business.constructor.model.User;
+import ua.com.brdo.business.constructor.model.VerificationToken;
 import ua.com.brdo.business.constructor.service.UserService;
+import ua.com.brdo.business.constructor.utils.HtmlRender;
+import ua.com.brdo.business.constructor.utils.Mailer;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
+    private final HtmlRender htmlRender;
+    private final Mailer mailer;
 
     @Autowired
-    public UserController(final UserService userService) {
+    public UserController(final UserService userService, HtmlRender htmlRender, Mailer mailer) {
         this.userService = userService;
+        this.htmlRender = htmlRender;
+        this.mailer = mailer;
     }
 
     @PostMapping
@@ -43,6 +51,18 @@ public class UserController {
                 .buildAndExpand(user.getId())
                 .toUri();
         return ResponseEntity.created(location).body(registeredUser);
+    }
+
+    @PostMapping("register")
+    public ResponseEntity registerUser(@Valid @RequestBody final User user, HttpServletRequest request) {
+        User registeredUser = userService.create(user);
+        String userEmail = registeredUser.getEmail();
+        String requestUrl = request.getRequestURL().toString();
+        VerificationToken verificationToken = userService.generateAndSaveVerificationToken(registeredUser);
+        String verificationUrl = requestUrl + "?verification=" + verificationToken.getToken();
+        String message = htmlRender.renderVerificationEmail(registeredUser, verificationUrl);
+        mailer.send(userEmail, "Підтвердження реєстрації на сайті", message);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("available")

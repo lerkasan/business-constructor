@@ -2,6 +2,7 @@ package ua.com.brdo.business.constructor.service;
 
 import java.util.List;
 import ua.com.brdo.business.constructor.model.User;
+import ua.com.brdo.business.constructor.model.VerificationToken;
 
 public interface UserService {
 
@@ -18,4 +19,6 @@ public interface UserService {
     boolean isEmailAvailable(String email, Long id);
 
     boolean isUsernameAvailable(String username, Long id);
+
+    VerificationToken generateAndSaveVerificationToken(User user);
 }

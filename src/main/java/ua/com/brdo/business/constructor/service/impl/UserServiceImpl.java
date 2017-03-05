@@ -21,8 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ua.com.brdo.business.constructor.constraint.UniqueValidatable;
 import ua.com.brdo.business.constructor.model.Role;
 import ua.com.brdo.business.constructor.model.User;
+import ua.com.brdo.business.constructor.model.VerificationToken;
 import ua.com.brdo.business.constructor.repository.RoleRepository;
 import ua.com.brdo.business.constructor.repository.UserRepository;
+import ua.com.brdo.business.constructor.repository.VerificationTokenRepository;
 import ua.com.brdo.business.constructor.service.NotFoundException;
 import ua.com.brdo.business.constructor.service.UserService;
 
@@ -33,12 +35,14 @@ public class UserServiceImpl implements UserService, UserDetailsService, UniqueV
     private final UserRepository userRepo;
     private final RoleRepository roleRepo;
     private final PasswordEncoder passwordEncoder;
+    private final VerificationTokenRepository tokenRepository;
 
     @Autowired
-    public UserServiceImpl(final UserRepository userRepo, final RoleRepository roleRepo, final PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(final UserRepository userRepo, final RoleRepository roleRepo, final PasswordEncoder passwordEncoder, final VerificationTokenRepository tokenRepository) {
         this.userRepo = userRepo;
         this.roleRepo = roleRepo;
         this.passwordEncoder = passwordEncoder;
+        this.tokenRepository = tokenRepository;
     }
 
     @Override
@@ -120,4 +124,9 @@ public class UserServiceImpl implements UserService, UserDetailsService, UniqueV
         return userRepo.saveAndFlush(user);
     }
 
+    @Override
+    public VerificationToken generateAndSaveVerificationToken(User user) {
+        VerificationToken token = new VerificationToken(user);
+        return tokenRepository.save(token);
+    }
 }
