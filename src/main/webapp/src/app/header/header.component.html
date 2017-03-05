@@ -5,15 +5,15 @@
         <a [routerLink]="['']"><img src="/img/logo.png" alt="BRDO"></a>
       </div>
       <div class="col-lg-6 col-lg-offset-7 nav_button">
-        <span [hidden]="adminBoard" >
+        <span [hidden]="!adminBoard" >
           <a class="btn btn-default" [routerLink]="['../admin']" role="button">Адміністрування</a>
         </span>
-        <span [hidden]="!loggedin">
+        <span [hidden]="loggedin">
           <a class="btn btn-default" [routerLink]="['../login']" role="button">Вхід</a>
           <a class="btn btn-default" [routerLink]="['../register']"
              role="button">Реєстрація</a>
         </span>
-        <span [hidden]="loggedin">
+        <span [hidden]="!loggedin">
           <a class="btn btn-default disabled">Ви увійшли як: {{model.username}}</a>
           <a class="btn btn-default" (click)="logout()">Вийти</a>
         </span>

@@ -79,7 +79,7 @@ public class UserAuthenticationTest {
 
     @Test
     public void shouldSuccessfullyLogout() throws Exception {
-        mvc.perform(post("/logout"))
+        mvc.perform(post("/api/logout"))
                 .andExpect(status().isOk());
         mvc.perform(get(QUESTIONS_URL))
                 .andExpect(status().isForbidden());
