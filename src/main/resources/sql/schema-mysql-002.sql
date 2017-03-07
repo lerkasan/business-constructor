@@ -1,6 +1,3 @@
-DROP TABLE IF EXISTS questionnaire;
-DROP TABLE IF EXISTS business_type;
-
 CREATE TABLE business_type (
                 id          BIGINT         NOT NULL   AUTO_INCREMENT,
                 title       VARCHAR(1000)  NOT NULL,

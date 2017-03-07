@@ -1,10 +1,11 @@
 package ua.com.brdo.business.constructor.model;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static javax.persistence.GenerationType.IDENTITY;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.validation.annotation.Validated;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,12 +14,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.validation.annotation.Validated;
 import ua.com.brdo.business.constructor.constraint.NoCycle;
+
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Table(name = "option_")
@@ -83,8 +86,12 @@ public class Option {
             }
             Questionnaire questionnaire = question.getQuestionnaire();
             Questionnaire nextQuestionnaire = nextQuestion.getQuestionnaire();
-            if ((nextQuestionnaire != null) && (!nextQuestionnaire.equals(questionnaire))) {
-                throw new IllegalArgumentException("Question can be linked only to the questions from the same questionnaire.");
+            if ((nextQuestionnaire != null) && (questionnaire != null)) {
+                Long questionnaireId = questionnaire.getId();
+                Long nextQuestionnaireId = nextQuestionnaire.getId();
+                if (!questionnaireId.equals(nextQuestionnaireId)) {
+                    throw new IllegalArgumentException("Question can be linked only to the questions from the same questionnaire.");
+                }
             }
         }
     }

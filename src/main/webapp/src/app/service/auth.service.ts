@@ -2,17 +2,18 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Response, Http, Headers, RequestOptions} from '@angular/http';
 import {User} from '../model/user';
+import {UserService} from '../service/user.service';
 
 @Injectable()
 export class AuthService {
 
   private authenticatedUser = new User;
 
-  constructor(private http: Http) {
+  constructor(private http: Http, private userService: UserService) {
   }
 
-  public authRequest(username: string, password: string) {
-    let body = this.authBodyGenerator(username, password);
+  public authRequest(username: string, password: string, rememberme: boolean) {
+    let body = this.authBodyGenerator(username, password, rememberme);
     let headers = new Headers({'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'});
     headers.append('cache-control', 'no-cache');
     let options = new RequestOptions({headers: headers});
@@ -30,8 +31,41 @@ export class AuthService {
 
   public logout() {
     sessionStorage.removeItem('currentUser');
-    return this.http.get('/logout')
-      .subscribe();
+    sessionStorage.clear();
+    this.sendLogout().subscribe();
+  }
+
+  public sendLogout() {
+    let path = '/api/logout';
+    let headers = new Headers({'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'});
+    headers.append('cache-control', 'no-cache');
+    let options = new RequestOptions({headers: headers});
+    return this.http.get(path, options)
+      .map(
+        (response) => {
+          return response;
+        }
+      )
+      .catch(
+        (response) => {
+          return response;
+        }
+      );
+  }
+
+  public autoLogin() {
+    this.userService.getCurrentUser()
+      .subscribe(
+        (response: Response) => {
+          if (response.status === 200) {
+            this.authenticatedUser = response.json() as User;
+            sessionStorage.setItem('currentUser', JSON.stringify(this.authenticatedUser));
+          }
+        },
+        (response: Response) => {
+          console.log(response.json);
+        }
+      );
   }
 
   private handleError(error: Response | any) {
@@ -47,11 +81,13 @@ export class AuthService {
     return Observable.throw(errMsg);
   }
 
-  private authBodyGenerator(username: string, password: string) {
+  private authBodyGenerator(username: string, password: string, rememberme: boolean) {
     let body = '------WebKitFormBoundary7MA4YWxkTrZu0gW\r\n';
     body += 'Content-Disposition: form-data; name=\"username\"\r\n\r\n' + username + '\r\n';
     body += '------WebKitFormBoundary7MA4YWxkTrZu0gW\r\n';
     body += 'Content-Disposition: form-data; name=\"password\"\r\n\r\n' + password + '\r\n';
+    body += '------WebKitFormBoundary7MA4YWxkTrZu0gW\r\n';
+    body += 'Content-Disposition: form-data; name=\"rememberme\"\r\n\r\n' + rememberme + '\r\n';
     body += '------WebKitFormBoundary7MA4YWxkTrZu0gW--';
     return body;
   }

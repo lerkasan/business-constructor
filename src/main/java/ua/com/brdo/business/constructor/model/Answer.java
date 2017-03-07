@@ -1,11 +1,10 @@
 package ua.com.brdo.business.constructor.model;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static javax.persistence.CascadeType.PERSIST;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,9 +15,13 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static javax.persistence.CascadeType.PERSIST;
 
 @Entity
 @Table(name = "answer")
@@ -49,9 +52,15 @@ public class Answer {
     @JsonIgnore
     private Stage stage = new Stage();
 
-    @JsonIgnore
+    @JsonProperty
+    @JsonIgnoreProperties(value = {"options", "questionnaire"})
     public Question getQuestion() {
         return option.getQuestion();
+    }
+
+    @JsonIgnore
+    public Question getNextQuestion() {
+        return option.getNextQuestion();
     }
 
     @JsonIgnore

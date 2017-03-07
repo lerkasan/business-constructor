@@ -11,19 +11,18 @@ import {Router} from '@angular/router';
 })
 
 export class HeaderComponent implements OnInit {
-
-  loggedin = true;
+  loggedin = false;
   user = new User;
   model = this.user;
-  adminBoard: boolean = true;
+  adminBoard: boolean = false;
 
   constructor(private authService: AuthService, private router: Router) {
-    // Do stuff
   }
 
   ngOnInit() {
+    this.authService.autoLogin();
     if (sessionStorage.getItem('currentUser')) {
-      this.loggedin = false;
+      this.loggedin = true;
       this.user = JSON.parse(sessionStorage.getItem('currentUser'));
       this.model = this.user;
       this.adminBoard = this.showAdminPanel();
@@ -31,19 +30,19 @@ export class HeaderComponent implements OnInit {
   }
 
   logout() {
-    this.loggedin = true;
-    this.adminBoard = true;
+    this.loggedin = false;
+    this.adminBoard = false;
     this.authService.logout();
     this.router.navigate(['/']);
   }
 
   showAdminPanel() {
     if (this.authService.isLoggedAsExpert()) {
-      return false;
+      return true;
     }
     if (this.authService.isLoggedAsAdmin()) {
-      return false;
+      return true;
     }
-    return true;
+    return false;
   }
 }
