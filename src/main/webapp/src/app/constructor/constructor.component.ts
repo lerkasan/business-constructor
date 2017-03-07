@@ -18,12 +18,12 @@ import {Response} from '@angular/http';
 
 export class ConstructorComponent implements OnInit {
 
-  ERROR_MSG_FIRST_SAVE_FIELD: string = 'Поле повинно бути заповнене і збережено!';
-  ERROR_MSG_EMPTY_FIELD: string = 'Поле не повинно бути пустим!';
-  STYLE_WRONG_SUBMISSION: string = 'wrongSubmission';
-  STYLE_SUCCESS_SUBMISSION: string = 'successSubmission';
-  ATTACHED_QUESTION: string = 'Приеднати питання';
-  ATTACHED_PROCEDURE: string = 'Приеднати картку';
+  ERROR_MSG_FIRST_SAVE_FIELD = 'Поле повинно бути заповнене і збережено!';
+  ERROR_MSG_EMPTY_FIELD = 'Поле не повинно бути пустим!';
+  STYLE_WRONG_SUBMISSION = 'wrongSubmission';
+  STYLE_SUCCESS_SUBMISSION = 'successSubmission';
+  ATTACHED_QUESTION = 'Приеднати питання';
+  ATTACHED_PROCEDURE = 'Приеднати картку';
 
   canSubmit: boolean;
   optionIndexError: number;
@@ -39,22 +39,28 @@ export class ConstructorComponent implements OnInit {
   procedures: Procedure[];
   businessType: BusinessType;
   questionnaire: Questionnaire;
-  wrongBusinessType: boolean = false;
-  wrongQuestionnaire: boolean = false;
-  wrongQuestion: boolean = false;
-  successQuestionnaire: boolean = false;
-  successBusinessType: boolean = false;
-  successQuestionLink: boolean = false;
-  successProcedureLink: boolean = false;
+  wrongBusinessType = false;
+  wrongQuestionnaire = false;
+  wrongQuestion = false;
+  successQuestionnaire = false;
+  successBusinessType = false;
+  successQuestionLink = false;
+  successProcedureLink = false;
   businessTypes: BusinessType[];
-  businessTypeTitleClass: string = '';
-  businessTypeKvedClass: string = '';
-  questionnaireClass: string = '';
+  businessTypeTitleClass = '';
+  businessTypeKvedClass = '';
+  questionnaireClass = '';
   questionFieldIndexWithChange: number;
   optionFieldIndexWithChange: number;
   questionOptionFieldIndexWithChange: number;
   inputTypeFieldIndexWithChange: number;
   quesIndex: number;
+  kvedsSelect: Select[];
+  proceduresSelect: Select[];
+  questionsSelect: Select[];
+  linkedProcedure: string;
+  linkedQuestion: string;
+  some = false;
 
   inputType = [
     {value: 'SINGLE_CHOICE'},
@@ -78,6 +84,8 @@ export class ConstructorComponent implements OnInit {
     this.errorOptionMessage = '';
     this.optionIndexError = 0.1;
     this.canSubmit = false;
+    this.linkedProcedure = this.ATTACHED_PROCEDURE;
+    this.linkedQuestion = this.ATTACHED_QUESTION;
   }
 
   onSelectQuestion(question: Question): void {
@@ -86,6 +94,18 @@ export class ConstructorComponent implements OnInit {
   }
 
   onSelectOption(option: Option): void {
+    if (option.nextQuestion !== undefined) {
+      this.linkedQuestion = this.findeQuestionById(option.nextQuestion.id).text;
+    }
+    if (option.procedure !== undefined) {
+      this.linkedProcedure = this.findeProcedureById(option.procedure.id).name;
+    }
+    if (option.nextQuestion === undefined) {
+      this.linkedQuestion = this.ATTACHED_QUESTION;
+    }
+    if (option.procedure === undefined) {
+      this.linkedProcedure = this.ATTACHED_PROCEDURE;
+    }
     this.selectedOption = option;
     this.selectedOptionTitle = option.title;
     if (option.nextQuestion !== undefined) {
@@ -305,10 +325,10 @@ export class ConstructorComponent implements OnInit {
     }
   }
 
-  questionLinker(questionText: string, option: Option): void {
+  questionLinker(questionText: Select, option: Option): void {
     let id: number;
     for (let question of this.questions) {
-      if (question.text === questionText) {
+      if (question.text === questionText.label) {
         id = question.id;
       }
     }
@@ -342,9 +362,9 @@ export class ConstructorComponent implements OnInit {
       );
   }
 
-  procedureLinker(id, option) {
+  procedureLinker(selected: Select, option) {
     let procedure = new Procedure();
-    procedure.id = +id;
+    procedure.id = +selected.value;
     option.procedure = procedure;
     this.resetStatusSubmissionWithDelay();
     if (option.id === undefined) {
@@ -375,6 +395,13 @@ export class ConstructorComponent implements OnInit {
         (response: Response) => {
           if (response.status === 200) {
             this.procedures = response.json() as Procedure[];
+            this.proceduresSelect = [];
+            for (let procedure of this.procedures) {
+              let select = new Select();
+              select.value = '' + procedure.id;
+              select.label = procedure.name;
+              this.proceduresSelect.push(select);
+            }
           }
         },
         error => console.log(<any>error)
@@ -424,7 +451,7 @@ export class ConstructorComponent implements OnInit {
       this.errorMessage = 'Спочатку виберіть тип бізнесу!';
       this.businessTypeKvedClass = this.STYLE_WRONG_SUBMISSION;
       this.businessTypeTitleClass = this.STYLE_WRONG_SUBMISSION;
-      this.wrongQuestionnaire = true;
+      this.wrongBusinessType = true;
       return;
     }
     if (this.questionnaire.title === undefined || this.questionnaire.title === '') {
@@ -457,6 +484,7 @@ export class ConstructorComponent implements OnInit {
   }
 
   getBusinessTypes() {
+    console.log('get Business Type');
     if (this.businessTypes === undefined) {
       this.businessTypes = [];
     }
@@ -464,6 +492,14 @@ export class ConstructorComponent implements OnInit {
       .subscribe(
         (response: BusinessType[]) => {
           this.businessTypes = response;
+          this.kvedsSelect = [];
+          for (let type of this.businessTypes) {
+            let sel = new Select();
+            sel.label = type.codeKved + ' : ' + type.title;
+            sel.value = '' + type.id;
+            this.kvedsSelect.push(sel);
+          }
+          console.log('its ok');
         },
         (error) => {
           console.log(error);
@@ -471,10 +507,10 @@ export class ConstructorComponent implements OnInit {
       );
   }
 
-  chooseTypeBusinessFromServer(id) {
+  chooseTypeBusinessFromServer(selectedKved) {
     this.resetErrorStatus();
     for (let businessType of this.businessTypes) {
-      if (businessType.id.toString() === id) {
+      if (businessType.id.toString() === selectedKved.value) {
         this.businessType = businessType;
       }
     }
@@ -515,6 +551,74 @@ export class ConstructorComponent implements OnInit {
       }, 5000
     );
   }
+
+  formingQuestionSelect(item: Question) {
+    this.questionsSelect = [];
+    for (let question of this.questions) {
+      if (item.id === question.id) {
+        continue;
+      }
+      let select = new Select();
+      select.value = '' + question.id;
+      select.label = question.text;
+      this.questionsSelect.push(select);
+    }
+  }
+
+  findeQuestionById(id: number): Question {
+    for (let question of this.questions) {
+      if (question.id === id) {
+        return question;
+      }
+    }
+  }
+
+  findeProcedureById(id: number): Procedure {
+    for (let procedure of this.procedures) {
+      if (procedure.id === id) {
+        return procedure;
+      }
+    }
+  }
+
+  onDeselectedNextQuestion(option, question) {
+    if (option.nextQuestion === undefined) {
+      return;
+    }
+    option.nextQuestion = undefined;
+    this.questionService.updateQuestion(question)
+      .subscribe(
+        (response: Response) => {
+          if (response.status === 200) {
+            this.linkedQuestion = this.ATTACHED_PROCEDURE;
+          }
+        },
+        (response: Response) => {
+          console.log(response);
+        }
+      );
+  }
+
+  onDeselectedProcedure(option, question) {
+    console.log('deselected');
+    if (option.procedure === undefined) {
+      return;
+    }
+    this.some = true;
+    option.procedure = undefined;
+    this.questionService.updateQuestion(question)
+      .subscribe(
+        (response: Response) => {
+          if (response.status === 200) {
+            this.linkedProcedure = this.ATTACHED_PROCEDURE;
+          }
+        },
+        (response: Response) => {
+          console.log(response);
+        }
+      );
+
+  }
 }
 
 class Id {
@@ -523,4 +627,10 @@ class Id {
   constructor(id: number) {
     this.id = id;
   }
+}
+
+class Select {
+  value: string;
+  label: string;
+  disabled = false;
 }

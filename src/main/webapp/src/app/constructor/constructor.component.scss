@@ -81,7 +81,6 @@ option {
 .inner-addon .glyphicon {
   position: absolute;
   padding: 10px;
-  pointer-events: none;
 }
 
 .left-addon .glyphicon {
@@ -90,6 +89,13 @@ option {
 
 .right-addon .glyphicon {
   right: 0px;
+}
+
+.glyphicon-remove {
+  right: 60%;
+  padding: 10px;
+  position: absolute;
+  cursor: pointer;
 }
 
 .left-addon input {
@@ -115,4 +121,9 @@ option {
 .save-btn {
   text-align: center;
   margin: 20px;
+}
+
+.kvedControl  {
+  border: 1px solid gray;
+  border-radius: 5px;
 }
