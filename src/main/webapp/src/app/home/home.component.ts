@@ -36,11 +36,11 @@ export class HomeComponent implements OnInit {
   selectedBusinessType: BusinessType;
   submitAnswers: boolean;
   questionsSelect: Select[];
+  procedureList: Procedure[];
+  questionnaireName: string;
 
   constructor(private _elmRef: ElementRef, private businessTypeService: BusinessTypeService,
               private questionService: QuestionService, private procedureService: ProcedureService) {
-    let numOptions = 100;
-    let opts = new Array(numOptions);
   }
 
   ngOnInit() {
@@ -60,6 +60,9 @@ export class HomeComponent implements OnInit {
     this.business.businessType = new BusinessType();
     this.answers = [];
     this.submitAnswers = false;
+    if (this.procedureList === undefined) {
+      this.initDefoultProcedures();
+    }
   }
 
   onSingleOpened() {
@@ -120,11 +123,13 @@ export class HomeComponent implements OnInit {
       );
   }
 
-  onSelectQuestionnaire(selectedQuestion: Select) {
+  onSelectQuestionnaire(selectedQuestionnaire: Select) {
+    this.questionnaireName = selectedQuestionnaire.label;
+    this.procedureList = [];
     this.questions = [];
     this.procedures = [];
     for (let questionnaire of this.questionnaires) {
-      if (questionnaire.id.toString() === selectedQuestion.value) {
+      if (questionnaire.id.toString() === selectedQuestionnaire.value) {
         this.business.business = questionnaire.title;
         this.business.businessType.id = questionnaire.businessType.id;
         this.businessType = questionnaire.businessType;
@@ -154,6 +159,7 @@ export class HomeComponent implements OnInit {
       return;
     }
     this.answers.push(this.answerInit(option));
+    this.buildProcedureArray();
     if (option.nextQuestion === undefined) {
       this.canSubmitAnswers(this.questions, this.answers);
       return;
@@ -359,6 +365,7 @@ export class HomeComponent implements OnInit {
   }
 
   buildProcedureArray() {
+    this.procedures = [];
     for (let answer of this.answers) {
       if (answer.option.procedure !== undefined) {
         if (!this.ifProcedureIsPresent(answer.option.procedure.id)) {
@@ -369,6 +376,7 @@ export class HomeComponent implements OnInit {
                   let procedure: Procedure = response.json() as Procedure;
                   procedure.stage = this.stageInit();
                   this.procedures.push(procedure);
+                  this.procedureList = this.procedures;
                 }
               },
               (response: Response) => {
@@ -400,7 +408,35 @@ export class HomeComponent implements OnInit {
   }
 
   onKvedSelected($event) {
+  }
 
+  initDefoultProcedures() {
+    this.questionnaireName = 'Ресторан';
+    this.procedureList = [];
+    let procedure = new Procedure();
+    procedure.name = 'Реєстрація ФОП';
+    this.procedureList.push(procedure);
+    procedure = new Procedure();
+    procedure.name = 'Реєстрація за загальною системою';
+    this.procedureList.push(procedure);
+    procedure = new Procedure();
+    procedure.name = 'Реєстрація касового апарата';
+    this.procedureList.push(procedure);
+    procedure = new Procedure();
+    procedure.name = 'Реєстрація еквайрінгу';
+    this.procedureList.push(procedure);
+    procedure = new Procedure();
+    procedure.name = 'Отримання ліцензії на право реалізації тютюнових виробів';
+    this.procedureList.push(procedure);
+    procedure = new Procedure();
+    procedure.name = 'Отримання висновку Державно санітарно-епідеміологічної служби';
+    this.procedureList.push(procedure);
+    procedure = new Procedure();
+    procedure.name = 'Реєстрація відповідності пожежній безпеці';
+    this.procedureList.push(procedure);
+    procedure = new Procedure();
+    procedure.name = 'Отримання дозволу на розміщення зовнішньої реклами';
+    this.procedureList.push(procedure);
   }
 }
 

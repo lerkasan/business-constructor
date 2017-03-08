@@ -7,16 +7,9 @@
   <!-- Wrapper for slides -->
   <div class="carousel-inner" role="listbox">
     <div class="item active">
-     <p>Ресторан</p>
+     <p>{{questionnaireName}}</p>
       <ul class="carousel_list__step">
-        <li>Реєстрація ФОП</li>
-        <li>Реєстрація за загальною системою</li>
-        <li>Реєстрація касового апарата</li>
-        <li>Реєстрація еквайрінгу</li>
-        <li>Отримання ліцензії на право реалізації тютюнових виробів</li>
-        <li>Отримання висновку Державно санітарно-епідеміологічної служби</li>
-        <li>Реєстрація відповідності пожежній безпеці</li>
-        <li>Отримання дозволу на розміщення зовнішньої реклами</li>
+        <li *ngFor="let procedure of procedureList">{{procedure.name}}</li>
       </ul>
     </div>
   </div>

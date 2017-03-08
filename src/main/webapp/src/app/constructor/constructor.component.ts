@@ -484,7 +484,6 @@ export class ConstructorComponent implements OnInit {
   }
 
   getBusinessTypes() {
-    console.log('get Business Type');
     if (this.businessTypes === undefined) {
       this.businessTypes = [];
     }
@@ -499,7 +498,6 @@ export class ConstructorComponent implements OnInit {
             sel.value = '' + type.id;
             this.kvedsSelect.push(sel);
           }
-          console.log('its ok');
         },
         (error) => {
           console.log(error);

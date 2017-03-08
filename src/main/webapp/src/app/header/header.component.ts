@@ -14,7 +14,7 @@ export class HeaderComponent implements OnInit {
   loggedin = false;
   user = new User;
   model = this.user;
-  adminBoard: boolean = false;
+  adminBoard = false;
 
   constructor(private authService: AuthService, private router: Router) {
   }

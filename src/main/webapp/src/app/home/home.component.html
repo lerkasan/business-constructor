@@ -3,9 +3,21 @@
 <div [hidden]="submitAnswers" class="container">
   <div class="row first_row">
     <div class="col-md-4 carousel_list">
-      <brdo-carousel>
+      <div id="myCarousel" class="carousel slide" data-ride="carousel">
 
-      </brdo-carousel>
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner" role="listbox">
+          <div class="item active">
+            <p>{{questionnaireName}}</p>
+            <ul class="carousel_list__step">
+              <li *ngFor="let procedure of procedureList">{{procedure.name}}</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Left and right controls -->
+
+      </div>
     </div>
     <div class="col-md-8 questionnaire">
       <h3>Ви бажаєте розпочати бізнес?</h3>
@@ -71,7 +83,7 @@
       <span>Відповіді:</span>
       <span *ngFor="let answer of answers">&nbsp;{{answer.option.title}}.</span>
       <span>
-      <button class="btn btn-primary btn-xs" (click)="submitAnswers = false">Повернутися до редагування</button>
+      <button class="btn btn-primary btn-xs" (click)="submitAnswers = false">Змінити відповіді</button>
       </span>
     </div>
     <br>
