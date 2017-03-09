@@ -1,7 +1,7 @@
 import { NgModule, ApplicationRef } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpModule, JsonpModule } from '@angular/http';
-import { FormsModule } from '@angular/forms';
+import {FormsModule} from '@angular/forms';
 
 
 import { AppComponent } from './app.component';
@@ -26,6 +26,7 @@ import {BusinessTypeService} from './service/business.type.service';
 import {ApiService} from './shared/api.service';
 import {BoardAuthGuard} from './guards/board.auth.guard';
 import {UserService} from './service/user.service';
+import {SelectModule} from 'angular2-select';
 
 @NgModule({
   imports: [
@@ -33,7 +34,8 @@ import {UserService} from './service/user.service';
     HttpModule,
     FormsModule,
     routing,
-    JsonpModule
+    JsonpModule,
+    SelectModule
   ],
   declarations: [
     AppComponent,

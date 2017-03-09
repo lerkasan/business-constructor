@@ -72,7 +72,7 @@ export class QuestionService {
     return this.http.get(path, options)
       .map(
         (response) => {
-          return response.json() as Questionnaire[];
+          return response;
         }
       )
       .catch(this.handleError);

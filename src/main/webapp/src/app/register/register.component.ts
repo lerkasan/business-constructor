@@ -13,7 +13,7 @@ export class RegisterComponent implements OnInit {
   user = new User();
   duplicatePassword = new DuplicatePassword();
   message = '';
-  succes: boolean = false;
+  succes = false;
 
 
   constructor(private registrationService: RegistrationService, private router: Router) {

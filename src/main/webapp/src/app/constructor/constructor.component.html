@@ -3,19 +3,18 @@
     <div *ngIf="wrongBusinessType" class="alert alert-warning">
       {{errorMessage}}
     </div>
-    <label for="businesType">Виберіть тип бізнесу</label>
-    <div class="clear"></div>
-    <div class="row">
-      <div class="col-xs-12">
-        <select class="form-control"
-                #v (change)="chooseTypeBusinessFromServer(v.value)">
-          <option hidden>Виберіть існуючий КВЕД</option>
-          <option *ngFor="let businessType of businessTypes"
-                  [value]="businessType.id">
-            {{businessType.codeKved}} : {{'\n' + businessType.title}}
-            <i class="fa fa-check"></i>
-          </option>
-        </select>
+    <div>
+      <label for="businesType">Виберіть тип бізнесу</label>
+      <div class="clear"></div>
+      <div class="row">
+        <div class="col-xs-12">
+          <ng-select class="kvedControl"
+                     [options]="kvedsSelect"
+                     placeholder="Виберіть існуючий КВЕД"
+                     (selected)="chooseTypeBusinessFromServer($event)"
+                     notFoundMsg="Не знайдено"></ng-select>
+          <i class="fa fa-check"></i>
+        </div>
       </div>
     </div>
     <div *ngIf="businessType.title != '' || businessType.codeKved != ''"
@@ -98,49 +97,25 @@
                  (blur)="saveOption(question, option)"/>
         </div>
         <div *ngIf="selectedOption == option && selectedQuestion == question">
-
           <div class="col-xs-12">
-            <select class="form-control"
-                    [ngClass]="{successSubmission: false}"
-                    #questionText
-                    (change)="questionLinker(questionText.value, option); onSelectQuestion(question)">
-              <option hidden>{{attachedQuestion}}</option>
-              <ng-container *ngFor="let dropDownQuestion of questions; let ddqIndex = index;">
-                <option
-                  *ngIf="dropDownQuestion != question && dropDownQuestion.text != attachedQuestion"
-                  [value]="dropDownQuestion.text">
-                  <span>
-                    {{dropDownQuestion.text}}
-                  </span>
-                  <i class="fa fa-check"></i>
-                </option>
-              </ng-container>
-            </select>
-            <span *ngIf="false"
-                  class="glyphicon form-control-feedback glyphicon-ok"
-                  style="color:#bfff83"></span>
+            <ng-select class="kvedControl"
+                       [options]="questionsSelect"
+                       placeholder="{{linkedQuestion}}"
+                       (opened)="formingQuestionSelect(question)"
+                       (selected)="questionLinker($event, option); onSelectQuestion(question)"
+                       notFoundMsg="Не знайдено">fdgsdfgsdf
+            </ng-select>
           </div>
-          <div class="col-xs-12">
-            <select class="form-control"
-                    [ngClass]="{successSubmission: false}"
-                    #procedureId
-                    (change)="procedureLinker(procedureId.value, option); onSelectQuestion(question)">
-              <option hidden>{{attachedProcedure}}</option>
-              <ng-container *ngFor="let procedure of procedures">
-                <option *ngIf="procedure.name != attachedProcedure"
-                        [value]="procedure.id">
-                  <span>
-                    {{procedure.name}}
-                  </span>
-                  <i class="fa fa-check"></i>
-                </option>
-              </ng-container>
-            </select>
-            <span *ngIf="false"
-                  class="glyphicon form-control-feedback glyphicon-ok"
-                  style="color:#bfff83"></span>
-          </div>
+          <div *ngIf="!some">
+            <div class="col-xs-12">
 
+              <ng-select class="kvedControl"
+                         [options]="proceduresSelect"
+                         placeholder="{{linkedProcedure}}"
+                         (selected)="procedureLinker($event, option); onSelectQuestion(question)"
+                         notFoundMsg="Не знайдено"></ng-select>
+            </div>
+          </div>
         </div>
       </div>
       <div class="btnAddOption" *ngIf="selectedQuestion == question">

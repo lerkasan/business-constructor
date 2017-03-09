@@ -3,24 +3,33 @@
 <div [hidden]="submitAnswers" class="container">
   <div class="row first_row">
     <div class="col-md-4 carousel_list">
-      <brdo-carousel>
+      <div id="myCarousel" class="carousel slide" data-ride="carousel">
 
-      </brdo-carousel>
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner" role="listbox">
+          <div class="item active">
+            <p>{{questionnaireName}}</p>
+            <ul class="carousel_list__step">
+              <li *ngFor="let procedure of procedureList">{{procedure.name}}</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Left and right controls -->
+
+      </div>
     </div>
     <div class="col-md-8 questionnaire">
       <h3>Ви бажаєте розпочати бізнес?</h3>
       <p class="title"> Дайте відповіді для персоналізації етапів реєстрації.</p>
       <div>
         <p>Який конкретно бізнес? Виберіть найменування опитувальника.</p>
-        <div class="form-group">
-          <select class="form-control" id="sel1" #t (change)="onSelectQuestionnaire(t.value)">
-            <option hidden>Виберіть бізнес</option>
-            <option *ngFor="let questionnaire of questionnaires;"
-                    [value]="questionnaire.id">
-              {{questionnaire.title}}
-              <i class="fa fa-check"></i>
-            </option>
-          </select>
+        <div>
+          <ng-select class="chose"
+                     [options]="questionsSelect"
+                     placeholder="Виберіть бізнес"
+                     notFoundMsg="Не знайдено"
+                     (selected)="onSelectQuestionnaire($event)"></ng-select>
         </div>
         <div *ngIf="businessType.codeKved != '' || businessType.title != ''" class="form-group">
           <p>Найменування КВЕД</p>
@@ -54,8 +63,6 @@
                        attr.name="{{question.id}}"
                        (click)="nextQuestion(option, question)">
                 {{option.title}}
-                <a href="#" data-toggle="tooltip" title="Додаткові відомотсі відсутні!"
-                   class="info-tooltip"><img src="/img/info.png"></a>
               </label>
             </div>
           </div>
@@ -75,9 +82,9 @@
     <div>
       <span>Відповіді:</span>
       <span *ngFor="let answer of answers">&nbsp;{{answer.option.title}}.</span>
-      <!--<span>-->
-      <!--<button class="btn btn-primary btn-xs">Повернутися до редагування</button>-->
-      <!--</span>-->
+      <span>
+      <button class="btn btn-primary btn-xs" (click)="submitAnswers = false">Змінити відповіді</button>
+      </span>
     </div>
     <br>
     <div class="col-md-4 main_steps">
