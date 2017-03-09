@@ -20,7 +20,9 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.authService.autoLogin();
+    if (!sessionStorage.getItem('currentUser')) {
+      this.authService.autoLogin();
+    }
     if (sessionStorage.getItem('currentUser')) {
       this.loggedin = true;
       this.user = JSON.parse(sessionStorage.getItem('currentUser'));

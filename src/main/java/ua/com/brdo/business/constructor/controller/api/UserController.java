@@ -92,7 +92,7 @@ public class UserController {
 
     @GetMapping("current")
     public ResponseEntity getCurrentUser(Authentication authentication) {
-        if (authentication instanceof AnonymousAuthenticationToken) {
+        if ((authentication == null) || (authentication instanceof AnonymousAuthenticationToken)) {
            return ResponseEntity.notFound().build();
         }
         User currentUser = (User) authentication.getPrincipal();
