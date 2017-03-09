@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS verification_token;
 DROP TABLE IF EXISTS persistent_logins;
 DROP TABLE IF EXISTS answer;
 DROP TABLE IF EXISTS stage;

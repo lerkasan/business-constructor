@@ -2,7 +2,6 @@ package ua.com.brdo.business.constructor.controller.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import ua.com.brdo.business.constructor.model.User;
-import ua.com.brdo.business.constructor.model.VerificationToken;
+import ua.com.brdo.business.constructor.service.NotFoundException;
 import ua.com.brdo.business.constructor.service.UserService;
 import ua.com.brdo.business.constructor.utils.HtmlRender;
 import ua.com.brdo.business.constructor.utils.Mailer;
@@ -36,7 +35,7 @@ public class UserController {
     private final Mailer mailer;
 
     @Autowired
-    public UserController(final UserService userService, HtmlRender htmlRender, Mailer mailer) {
+    public UserController(final UserService userService, final HtmlRender htmlRender, final Mailer mailer) {
         this.userService = userService;
         this.htmlRender = htmlRender;
         this.mailer = mailer;
@@ -58,11 +57,29 @@ public class UserController {
         User registeredUser = userService.create(user);
         String userEmail = registeredUser.getEmail();
         String requestUrl = request.getRequestURL().toString();
-        VerificationToken verificationToken = userService.generateAndSaveVerificationToken(registeredUser);
-        String verificationUrl = requestUrl + "?verification=" + verificationToken.getToken();
+        String verificationUrl = requestUrl + "?token=" + user.getToken();
         String message = htmlRender.renderVerificationEmail(registeredUser, verificationUrl);
         mailer.send(userEmail, "Підтвердження реєстрації на сайті", message);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("register")
+    public ResponseEntity confirmRegistration(@RequestParam("token") String token) {
+        String emailVerificationError = "Посилання для підтвердження реєстрації застаріло. Зареєструйтесь заново.";
+        String emailVerificationSuccess = "Ви успішно підтвердили поштову скриньку. Реєстрацію завершено вдало. Зараз відкриється головна сторінка.";
+        String body = htmlRender.renderEmailRegistation(emailVerificationError);
+        User user;
+        try {
+            user = userService.findByToken(token);
+        } catch (NotFoundException e) {
+            return ResponseEntity.ok().body(body);
+        }
+        user.setEnabled(true);
+        user.setToken("");
+        user.setRawPassword("xxxxxxxxxx".toCharArray());
+        userService.update(user);
+        body = htmlRender.renderEmailRegistation(emailVerificationSuccess);
+        return ResponseEntity.ok().body(body);
     }
 
     @GetMapping("available")

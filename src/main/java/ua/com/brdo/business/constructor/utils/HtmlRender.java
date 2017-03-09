@@ -18,6 +18,7 @@ public class HtmlRender {
     private static final String FLOW_TEMPLATE = "flow";
     private static final String VERIFICATION_TEMPLATE = "verification";
     private static final String ERROR_TEMPLATE = "error";
+    private static final String VERIFIED_TEMPLATE = "email-verified";
     private TemplateEngine templateEngine;
 
     @Autowired
@@ -44,5 +45,11 @@ public class HtmlRender {
         context.setVariable("username", user.getUsername());
         context.setVariable("url", url);
         return templateEngine.process(VERIFICATION_TEMPLATE, context);
+    }
+
+    public String renderEmailRegistation(String message) {
+        final Context context = new Context();
+        context.setVariable("message", message);
+        return templateEngine.process(VERIFIED_TEMPLATE, context);
     }
 }

@@ -6,15 +6,15 @@ CREATE TABLE role (
 );
 
 CREATE TABLE user (
-  id                IDENTITY         NOT NULL,
-  username          VARCHAR(255)     NOT NULL,
-  first_name        VARCHAR(255),
-  middle_name       VARCHAR(255),
-  last_name         VARCHAR(255),
-  email             VARCHAR(255)     NOT NULL,
-  password_hash     VARCHAR(60)      NOT NULL,
-  creation_date     DATE             NOT NULL,
-  CONSTRAINT user_id PRIMARY KEY (id),
+  id                  IDENTITY         NOT NULL,
+  username            VARCHAR(255)     NOT NULL,
+  first_name          VARCHAR(255),
+  middle_name         VARCHAR(255),
+  last_name           VARCHAR(255),
+  email               VARCHAR(255)     NOT NULL,
+  password_hash       VARCHAR(60)      NOT NULL,
+  creation_timestamp  TIMESTAMP        NOT NULL,
+  CONSTRAINT user_id  PRIMARY KEY (id),
   UNIQUE (username),
   UNIQUE (email)
 );

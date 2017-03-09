@@ -1,18 +1,21 @@
 package ua.com.brdo.business.constructor.service.impl;
 
-import static java.util.Objects.isNull;
-
-import java.util.List;
-import java.util.Objects;
-import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Objects;
+
+import javax.validation.Valid;
+
 import ua.com.brdo.business.constructor.constraint.UniqueValidatable;
 import ua.com.brdo.business.constructor.model.BusinessType;
 import ua.com.brdo.business.constructor.repository.BusinessTypeRepository;
 import ua.com.brdo.business.constructor.service.BusinessTypeService;
 import ua.com.brdo.business.constructor.service.NotFoundException;
+
+import static java.util.Objects.isNull;
 
 @Service
 public class BusinessTypeServiceImpl implements BusinessTypeService, UniqueValidatable {
@@ -44,6 +47,7 @@ public class BusinessTypeServiceImpl implements BusinessTypeService, UniqueValid
         businessTypeRepo.delete(id);
     }
 
+    @Transactional
     @Override
     public void delete(final BusinessType businessType) {
         businessTypeRepo.delete(businessType);

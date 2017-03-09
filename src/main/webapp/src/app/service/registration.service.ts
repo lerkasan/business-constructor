@@ -14,7 +14,7 @@ export class RegistrationService {
     let headers = new Headers({'Content-Type': 'application/json'});
     let options = new RequestOptions({headers: headers});
 
-    return this.http.post('/api/users', JSON.stringify(user), options)
+    return this.http.post('/api/users/register', JSON.stringify(user), options)
       .map((res) => {
         return res.status;
       })
@@ -25,8 +25,7 @@ export class RegistrationService {
     let errMsg: string;
     if (error instanceof Response) {
       const body = error.json() || '';
-      const err = body.error || JSON.stringify(body);
-      errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
+      errMsg = body.message;
     } else {
       errMsg = error.message ? error.message : error.toString();
     }

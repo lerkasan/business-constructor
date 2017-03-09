@@ -6,14 +6,14 @@ CREATE TABLE role (
 );
 
 CREATE TABLE user (
-  id              BIGINT          NOT NULL  AUTO_INCREMENT,
-  username        VARCHAR(255),
-  first_name      VARCHAR(255),
-  middle_name     VARCHAR(255),
-  last_name       VARCHAR(255),
-  email           VARCHAR(255)    NOT NULL,
-  password_hash   VARCHAR(60)     NOT NULL,
-  creation_date   DATE            NOT NULL,
+  id                  BIGINT          NOT NULL  AUTO_INCREMENT,
+  username            VARCHAR(255),
+  first_name          VARCHAR(255),
+  middle_name         VARCHAR(255),
+  last_name           VARCHAR(255),
+  email               VARCHAR(255)    NOT NULL,
+  password_hash       VARCHAR(60)     NOT NULL,
+  creation_timestamp  TIMESTAMP       NOT NULL,
   PRIMARY KEY (id),
   UNIQUE (email),
   UNIQUE (username)

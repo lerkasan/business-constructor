@@ -20,7 +20,6 @@ import ua.com.brdo.business.constructor.model.Role;
 import ua.com.brdo.business.constructor.model.User;
 import ua.com.brdo.business.constructor.repository.RoleRepository;
 import ua.com.brdo.business.constructor.repository.UserRepository;
-import ua.com.brdo.business.constructor.repository.VerificationTokenRepository;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
@@ -39,12 +38,11 @@ public class UserServiceImplTest {
     @Mock private UserRepository userRepo;
     @Mock private RoleRepository roleRepo;
     @Mock private PasswordEncoder passwordEncoder;
-    @Mock private VerificationTokenRepository tokenRepository;
     private UserServiceImpl underTest;
 
     @Before
     public void setUp() {
-        this.underTest = new UserServiceImpl(userRepo, roleRepo, passwordEncoder, tokenRepository);
+        this.underTest = new UserServiceImpl(userRepo, roleRepo, passwordEncoder);
     }
 
     @Test

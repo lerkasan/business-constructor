@@ -31,7 +31,7 @@ export class RegisterComponent implements OnInit {
     this.user.rawPassword = this.user.password;
     this.registrationService.registrationRequest(this.user)
       .subscribe((status) => {
-          if (status === 201) {
+          if (status === 200) {
             this.user.password = '';
             this.user.rawPassword = '';
             this.message = this.user.username;
@@ -39,7 +39,7 @@ export class RegisterComponent implements OnInit {
           }
         },
         (error) => {
-          this.message = <any>error;
+           this.message = <any>error;
         }
       );
   }

@@ -8,8 +8,10 @@
       </div>
     </div>
     <div class="main-login main-center">
+      <div *ngIf="!success && message != ''" class="alert alert-danger">
+        {{message}}
+      </div>
       <form class="form-horizontal" #registration="ngForm">
-
         <div class="form-group">
           <label for="username" class="cols-sm-2 control-label">Введіть бажаний логін</label>
           <div class="cols-sm-10">
@@ -119,6 +121,7 @@
         </div>
         <div class="form-group ">
           <button type="submit" class="btn btn-primary login-button"
+                  name="submit" id="submit"
                   (click)="registrationRequest(); registration.reset()"
                   [disabled]="!registration.valid || (user.password != duplicatePassword.duplicatePassword)">
             Зареєструватись
@@ -137,7 +140,9 @@
       <div class="panel-title text-center">
         <div class="main-login main-center">
           <div class="form-horizontal">
-            <h2 class="title">Дякуємо за реєстрацію! Тепер ви можете увійти.</h2>
+            <h3 class="email-sent">Дякуємо за реєстрацію!
+              <br>На вказану Вами поштову скриньку було надіслано лист для підтвердження реєстрації.
+              <br>Перейдіть, будь-ласка, за посиланням у листі для завершення процесу реєстрації на сайті.</h3>
           </div>
         </div>
       </div>

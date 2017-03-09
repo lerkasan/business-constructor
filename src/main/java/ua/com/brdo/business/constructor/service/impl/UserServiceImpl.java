@@ -1,16 +1,7 @@
 package ua.com.brdo.business.constructor.service.impl;
 
-import static java.util.Objects.nonNull;
-
-import java.nio.CharBuffer;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,31 +9,38 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.CharBuffer;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
 import ua.com.brdo.business.constructor.constraint.UniqueValidatable;
 import ua.com.brdo.business.constructor.model.Role;
 import ua.com.brdo.business.constructor.model.User;
-import ua.com.brdo.business.constructor.model.VerificationToken;
 import ua.com.brdo.business.constructor.repository.RoleRepository;
 import ua.com.brdo.business.constructor.repository.UserRepository;
-import ua.com.brdo.business.constructor.repository.VerificationTokenRepository;
 import ua.com.brdo.business.constructor.service.NotFoundException;
 import ua.com.brdo.business.constructor.service.UserService;
+
+import static java.util.Objects.nonNull;
 
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService, UniqueValidatable {
 
     private static final String ROLE_USER = "ROLE_USER";
+    private static final int TOKEN_EXPIRE_IN_DAYS = 1;
     private final UserRepository userRepo;
     private final RoleRepository roleRepo;
     private final PasswordEncoder passwordEncoder;
-    private final VerificationTokenRepository tokenRepository;
 
     @Autowired
-    public UserServiceImpl(final UserRepository userRepo, final RoleRepository roleRepo, final PasswordEncoder passwordEncoder, final VerificationTokenRepository tokenRepository) {
+    public UserServiceImpl(final UserRepository userRepo, final RoleRepository roleRepo, final PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
         this.roleRepo = roleRepo;
         this.passwordEncoder = passwordEncoder;
-        this.tokenRepository = tokenRepository;
     }
 
     @Override
@@ -76,6 +74,11 @@ public class UserServiceImpl implements UserService, UserDetailsService, UniqueV
     public UserDetails loadUserByUsername(String username) {
         return userRepo.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User with given user was not found."));
+    }
+
+    @Override
+    public User findByToken(String token) {
+        return userRepo.findByToken(token).orElseThrow(() -> new NotFoundException("Token not found. It may have expired."));
     }
 
     public boolean isAvailable(String fieldName, String fieldValue, Long id) {
@@ -113,20 +116,25 @@ public class UserServiceImpl implements UserService, UserDetailsService, UniqueV
     public User update(User user) {
         Objects.requireNonNull(user);
         Objects.requireNonNull(user.getAuthorities());
-        user.setPassword(userRepo.findOne(user.getId()).getPassword());
-        Set<Role> roles = new HashSet<>();
-        for (Role role : user.getAuthorities()) {
-            roles.add(roleRepo.findByTitle(role.getTitle())
-                    .orElseThrow(() -> new NotFoundException(String.format("Permit type with name=%s is not found", role.getTitle()))));
-
-        }
-        user.setAuthorities(roles);
         return userRepo.saveAndFlush(user);
     }
 
     @Override
-    public VerificationToken generateAndSaveVerificationToken(User user) {
-        VerificationToken token = new VerificationToken(user);
-        return tokenRepository.save(token);
+    @Transactional
+    public void delete(final long id) {
+        userRepo.delete(id);
+    }
+
+    @Override
+    @Transactional
+    public void delete(final User user) {
+        userRepo.delete(user);
+    }
+
+    @Transactional
+    @Scheduled(cron = "${cron.delete.expired.token}")
+    public void deleteExpiredTokens() {
+        LocalDateTime expireTimestamp = LocalDateTime.now().minusDays(TOKEN_EXPIRE_IN_DAYS);
+        userRepo.deleteNotVerifiedExpiredUsers(expireTimestamp);
     }
 }

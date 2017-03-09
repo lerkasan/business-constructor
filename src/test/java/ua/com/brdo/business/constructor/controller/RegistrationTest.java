@@ -136,7 +136,7 @@ public class RegistrationTest {
     }
 
     @Test
-    public void shouldRejectRegisterEmailNotUniqueTest() throws Exception {
+    public void shouldRejectRegisterNotUniqueEmailTest() throws Exception {
         String nonUniqueEmail = "some_user1@mail.com";
         invalidUserData.put("email", nonUniqueEmail);
         String invalidUserDataJson = jsonMapper.writeValueAsString(invalidUserData);
@@ -145,7 +145,20 @@ public class RegistrationTest {
                 post(REGISTRATION_URL).contentType(APPLICATION_JSON).content(invalidUserDataJson))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.message").value("User with this e-mail is already registered. Try another e-mail."));
+                .andExpect(jsonPath("$.message").value("Користувач з такою email адресою вже існує."));
+    }
+
+    @Test
+    public void shouldRejectRegisterNotUniqueUsernameTest() throws Exception {
+        String nonUniqueUsername = "some_user1";
+        invalidUserData.put("username", nonUniqueUsername);
+        String invalidUserDataJson = jsonMapper.writeValueAsString(invalidUserData);
+
+        mockMvc.perform(
+                post(REGISTRATION_URL).contentType(APPLICATION_JSON).content(invalidUserDataJson))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$.message").value("Цей логін вже зайнятий."));
     }
 
     @Test

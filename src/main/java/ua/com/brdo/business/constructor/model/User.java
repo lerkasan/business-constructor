@@ -10,10 +10,11 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -45,8 +46,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Validated
 @JsonInclude(NON_NULL)
 @Unique.List(value = {
-    @Unique(field = "username", service = UserServiceImpl.class, message = "User with this username is already registered. Try another username."),
-    @Unique(field = "email", service = UserServiceImpl.class, message = "User with this e-mail is already registered. Try another e-mail.")
+    @Unique(field = "username", service = UserServiceImpl.class, message = "Цей логін вже зайнятий."),
+    @Unique(field = "email", service = UserServiceImpl.class, message = "Користувач з такою email адресою вже існує.")
 })
 public class User implements UserDetails {
     @Id
@@ -76,9 +77,13 @@ public class User implements UserDetails {
     @Column(name = "password_hash", length = 60, nullable = false)
     private String password;
 
-    @Column(nullable = false, updatable = false)
-    @JsonFormat(pattern = "dd-MM-yyyy")
-    private LocalDate creationDate = LocalDate.now();
+    @Column(name = "creation_timestamp", nullable = false, updatable = false)
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
+    private LocalDateTime creationTimestamp = LocalDateTime.now();
+
+    @JsonIgnore
+    @Column(length = 64)
+    private String token = UUID.randomUUID().toString();
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role",
